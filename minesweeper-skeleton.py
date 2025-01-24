@@ -47,6 +47,13 @@ class App(tk.Tk):
             self.buttons[pos].config(image="")
         else:    
             self.buttons[pos].config(image=self.flagImage)
+        if self.checkWin():
+            message = "You Win!"
+            for pos in range(100):
+                self.buttons[pos].config(text = message[pos%len(message)], state="normal", bg="green", relief="raised")
+            self.gameOn = False
+            self.buttons[0]
+
 
     def placeMines(self):
         self.minepositions = [0 for x in range(100)]
@@ -61,7 +68,7 @@ class App(tk.Tk):
             # add a mine to that slot
                 self.minepositions[num] = 1
                 placedMines += 1
-                self.buttons[num].config(text="X")
+                #self.buttons[num].config(text="X")
 
 
 
@@ -116,7 +123,6 @@ class App(tk.Tk):
                     cellRow = row + rowdiff
                     cellCol = col + coldiff
                     cellPos = cellRow*10 + cellCol
-                    # only add to the queue if it's not already visited and it fits in the grid
                     if cellPos not in visited and 0<=cellRow<10 and 0 <= cellCol < 10:
                         q.append(cellPos)
 
@@ -124,8 +130,21 @@ class App(tk.Tk):
         self.placeMines()
         #after calling placeMines, this puts all the buttons back to their blank starting style
         for button in self.buttons:
-            button.config(state="normal", relief="raised", bg="lightgrey", image="")
+            button.config(text="", state="normal", relief="raised", bg="lightgrey", image="")
         self.gameOn = True
+
+    def checkWin(self):
+        for pos in range(100):
+            if self.minepositions[pos] == 1:
+                if self.buttons[pos].cget("image") != "pyimage1":
+                    # there is a mine,but no flag
+                    return False
+            else:
+                if self.buttons[pos].cget("image") == "pyimage1":
+                    # there is no mine,but there is a flag
+                    return False
+        # everything is OK
+        return True
 
 
 mine = App()
