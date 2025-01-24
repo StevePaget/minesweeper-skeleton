@@ -34,23 +34,12 @@ class App(tk.Tk):
         self.go()
 
     def buttonLeftClicked(self, event, pos):
-        print("Button", pos, " was left clicked")
-
-        if self.minepositions[pos] == 1:
-            self.dead()
-        else:
-            numMines = self.getNoMines(pos)
-            self.buttons[pos].config(text=numMines)
-
-
-
-
-        # When this happens, you have to check self.minepositions to see if it contains a mine
-        # if so, the mine explodes (  see dead()   )
-
-        # if it's not a mine, it changes to show the number of mines in neighbouring cells (see getNoMines)
-        # if there are no neighbouring mines (so it's blank) it flood-fills to reveal all contiguous blank cells
-        pass
+        if self.gameOn:
+            print("Button", pos, " was left clicked")
+            if self.minepositions[pos] == 1:
+                self.dead()
+            else:
+                self.floodfill(pos)
 
     def buttonRightClicked(self, event, pos):
         # when right clicked, a mine will either show a flag or hide the flag
