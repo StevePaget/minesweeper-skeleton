@@ -110,13 +110,14 @@ class App(tk.Tk):
             # if its zero, add all of its neighbors into the queue
             else:
                 self.buttons[thispos].config(image="", state="disabled", relief="flat", bg="lightblue")
-                col = pos % 10
-                row = pos // 10
+                col = thispos % 10
+                row = thispos // 10
                 for rowdiff,coldiff in [[-1,-1], [-1,0],[-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1] ]:
                     cellRow = row + rowdiff
                     cellCol = col + coldiff
-                    if 0<=cellRow<10 and 0 <= cellCol < 10:
-                        q.append(cellRow*10 + cellCol)
+                    cellPos = cellRow*10 + cellCol
+                    if cellPos not in visited and 0<=cellRow<10 and 0 <= cellCol < 10:
+                        q.append(cellPos)
 
     def go(self):
         self.placeMines()
