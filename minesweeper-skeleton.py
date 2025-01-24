@@ -35,12 +35,16 @@ class App(tk.Tk):
 
     def buttonLeftClicked(self, event, pos):
         print("Button", pos, " was left clicked")
-        numMines = self.getNoMines(pos)
-        self.buttons[pos].config(text=numMines)
+
+        if self.minepositions[pos] == 1:
+            self.dead()
+        else:
+            numMines = self.getNoMines(pos)
+            self.buttons[pos].config(text=numMines)
 
 
 
-        
+
         # When this happens, you have to check self.minepositions to see if it contains a mine
         # if so, the mine explodes (  see dead()   )
 
@@ -48,9 +52,12 @@ class App(tk.Tk):
         # if there are no neighbouring mines (so it's blank) it flood-fills to reveal all contiguous blank cells
         pass
 
-    def buttonRightClicked(self, event, num):
+    def buttonRightClicked(self, event, pos):
         # when right clicked, a mine will either show a flag or hide the flag
-        pass
+        if self.buttons[pos].cget("image") == "pyimage1":
+            self.buttons[pos].config(image="")
+        else:    
+            self.buttons[pos].config(image=self.flagImage)
 
     def placeMines(self):
         self.minepositions = [0 for x in range(100)]
@@ -85,21 +92,60 @@ class App(tk.Tk):
     def dead(self):
         self.gameOn = False
         # This changes all the cells to red, reveals the mines and ends the game
-
-        # To change the image on a button to a mine, use this:
-        # self.buttons[pos].config(image=self.mineImage)
-
-        # To change the colour and style of button:
-        # self.buttons[pos].config(state="normal", bg="red", relief="raised")
+        for pos in range(100):
+            if self.minepositions[pos] == 1:
+                # To change the image on a button to a mine, use this:
+                self.buttons[pos].config(image=self.mineImage)
+            # To change the colour and style of button:
+            self.buttons[pos].config(state="normal", bg="red", relief="raised")
 
     def floodfill(self, pos):
-        # This reveals all the contiguous blank spaces in a floood-fill manner.
+        # This reveals all the contiguous blank spaces in a flood-fill manner.
         # so all the blank cells are revealed, and a 'border' of mine numbers around the area are also revealed
 
         # To make a button appear flat:
         # self.buttons[pos].config(image="", state="disabled", relief="flat", bg="lightblue")
 
-        pass
+        q = [pos]
+        visited=[ ]
+
+        while len(q) >0:
+            # pop the first item from the queue
+            thispos = q.pop(0)
+            visited.append(thispos)
+            # find out how many neighbouring mines it has
+            mines = self.getNoMines(thispos)
+            # if it's a number > 0: put the number on this button
+            if mines > 0:
+                self.buttons[thispos].config(text=mines)
+            # if its zero, add all of its neighbors into the queue
+            else:
+                self.buttons[thispos].config(image="", state="disabled", relief="flat", bg="lightblue")
+                column = thispos % 10
+                
+                if thispos > 9 and column > 0 and thispos-11 not in visited and thispos-11 not in q:  # looking up and left
+                    q.append(thispos-11)
+                    
+                if thispos > 9 and thispos-10 not in visited and thispos-10 not in q:                 # looking up
+                    q.append(thispos-10)
+                    
+                if thispos > 9 and column <9 and thispos-9 not in visited and thispos-9 not in q:  # looking up and right
+                    q.append(thispos-9)
+                    
+                if column > 0 and thispos-1 not in visited and thispos-1 not in q: # left
+                    q.append(thispos-1)
+                    
+                if column < 9 and thispos+1 not in visited and thispos+1 not in q: # right
+                    q.append(thispos+1)
+                    
+                if thispos < 90 and column > 0 and thispos+9 not in visited and thispos+9 not in q:  # down left
+                    q.append(thispos+9)
+                    
+                if thispos < 90 and thispos+10 not in visited and thispos+10 not in q:    # down
+                    q.append(thispos+10)
+                    
+                if thispos < 90 and column < 9 and thispos+11 not in visited and thispos+11 not in q:  # down right
+                    q.append(thispos+11)
 
     def go(self):
         self.placeMines()
