@@ -116,6 +116,7 @@ class App(tk.Tk):
                     cellRow = row + rowdiff
                     cellCol = col + coldiff
                     cellPos = cellRow*10 + cellCol
+                    # only add to the queue if it's not already visited and it fits in the grid
                     if cellPos not in visited and 0<=cellRow<10 and 0 <= cellCol < 10:
                         q.append(cellPos)
 
