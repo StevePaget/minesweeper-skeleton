@@ -35,6 +35,12 @@ class App(tk.Tk):
 
     def buttonLeftClicked(self, event, pos):
         print("Button", pos, " was left clicked")
+        numMines = self.getNoMines(pos)
+        self.buttons[pos].config(text=numMines)
+
+
+
+        
         # When this happens, you have to check self.minepositions to see if it contains a mine
         # if so, the mine explodes (  see dead()   )
 
@@ -50,11 +56,30 @@ class App(tk.Tk):
         self.minepositions = [0 for x in range(100)]
         # self.minepositions is a 100-slot array containing 0 for blank cells and 1 for mines
         # 20 mines should be placed randomly
+        placedMines = 0
+        while placedMines < 20:
+            # pick a random number
+            num = random.randint(0,99)
+            # if that slot does not already have a mine
+            if self.minepositions[num] != 1:
+            # add a mine to that slot
+                self.minepositions[num] = 1
+                placedMines += 1
+                self.buttons[num].config(text="X")
+
+
 
     def getNoMines(self, pos):
         numberMines = 0
         # this checks the neighbouring cells of postion pos and counts the number of mines
         # it returns the number
+        col = pos % 10
+        row = pos // 10
+        for rowdiff,coldiff in [[-1,-1], [-1,0],[-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1] ]:
+            cellRow = row + rowdiff
+            cellCol = col + coldiff
+            if 0<=cellRow<10 and 0 <= cellCol < 10:
+                numberMines += self.minepositions[cellRow*10+cellCol]
         return numberMines
 
     def dead(self):
@@ -80,7 +105,7 @@ class App(tk.Tk):
         self.placeMines()
         #after calling placeMines, this puts all the buttons back to their blank starting style
         for button in self.buttons:
-            button.config(state="normal", text=" ", relief="raised", bg="lightgrey", image="")
+            button.config(state="normal", relief="raised", bg="lightgrey", image="")
         self.gameOn = True
 
 
