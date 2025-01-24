@@ -110,31 +110,13 @@ class App(tk.Tk):
             # if its zero, add all of its neighbors into the queue
             else:
                 self.buttons[thispos].config(image="", state="disabled", relief="flat", bg="lightblue")
-                column = thispos % 10
-                
-                if thispos > 9 and column > 0 and thispos-11 not in visited and thispos-11 not in q:  # looking up and left
-                    q.append(thispos-11)
-                    
-                if thispos > 9 and thispos-10 not in visited and thispos-10 not in q:                 # looking up
-                    q.append(thispos-10)
-                    
-                if thispos > 9 and column <9 and thispos-9 not in visited and thispos-9 not in q:  # looking up and right
-                    q.append(thispos-9)
-                    
-                if column > 0 and thispos-1 not in visited and thispos-1 not in q: # left
-                    q.append(thispos-1)
-                    
-                if column < 9 and thispos+1 not in visited and thispos+1 not in q: # right
-                    q.append(thispos+1)
-                    
-                if thispos < 90 and column > 0 and thispos+9 not in visited and thispos+9 not in q:  # down left
-                    q.append(thispos+9)
-                    
-                if thispos < 90 and thispos+10 not in visited and thispos+10 not in q:    # down
-                    q.append(thispos+10)
-                    
-                if thispos < 90 and column < 9 and thispos+11 not in visited and thispos+11 not in q:  # down right
-                    q.append(thispos+11)
+                col = pos % 10
+                row = pos // 10
+                for rowdiff,coldiff in [[-1,-1], [-1,0],[-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1] ]:
+                    cellRow = row + rowdiff
+                    cellCol = col + coldiff
+                    if 0<=cellRow<10 and 0 <= cellCol < 10:
+                        q.append(cellRow*10 + cellCol)
 
     def go(self):
         self.placeMines()
